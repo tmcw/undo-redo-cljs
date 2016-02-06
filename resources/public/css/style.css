@@ -5,9 +5,14 @@ body {
 
 #dots {
   position: relative;
+  width: 600px;
+  height: 200px;
+  background: #EFEFEF;
+  cursor: crosshair;
 }
 
 .dot {
+  cursor: hand;
   width: 10px;
   height: 10px;
   border-radius: 10px;
