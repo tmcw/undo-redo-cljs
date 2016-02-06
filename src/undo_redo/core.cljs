@@ -7,7 +7,10 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
-(defonce app-state (atom {:dots []}))
+(defonce app-state (atom {
+  :historyIndex 0
+  :history [[]]
+}))
 
 (domina/destroy! (domina/by-id "wrapper"))
 
@@ -26,9 +29,9 @@
       (fn [dot] (domina/append!
         (domina/by-id "dots")
         (str "<div id=" (:id dot) " "
-             "style='left:" (:x dot) "px;"
-             "top:" (:y dot) "px"
-             "' class='dot'></div>")))
+          "style='left:" (:x dot) "px;"
+          "top:" (:y dot) "px"
+          "' class='dot'></div>")))
       dots)))
 
 (events/listen!
@@ -36,14 +39,14 @@
   (fn [evt]
     (swap!
       app-state
-      update-in [:dots]
+      update-in [:history (:historyIndex @app-state)]
         (fn [old-dots]
           (conj old-dots {
             :x  (:offsetX evt)
             :y  (:offsetY evt)
             :id (.getTime (js/Date.))
           })))
-    (draw (:dots @app-state))))
+    (draw (get-in @app-state [:history (:historyIndex @app-state)]))))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
