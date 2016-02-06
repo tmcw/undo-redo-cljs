@@ -7,50 +7,46 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
-(defonce app-state (atom { :dots [] }))
+(defonce app-state (atom {:dots []}))
 
 (domina/destroy! (domina/by-id "wrapper"))
 
-(domina/append! (domina.css/sel "body")
-  "<div id='wrapper'><div id='dots'></div><button id='undo'>undo</button><button id='redo'>redo</button></div>")
+(domina/append!
+  (domina.css/sel "body")
+    "<div id='wrapper'><div id='dots'></div><button id='undo'>undo</button><button id='redo'>redo</button></div>")
 
 (domina/set-styles! (domina/by-id "dots") {
-  :width "600px" :height "200px" :background "#EFEFEF" :cursor "crosshair" })
+  :width "600px" :height "200px" :background "#EFEFEF" :cursor "crosshair"})
 
-;; printing app state or getting app state to
-;; work here at all has been very difficult:
-;; it always looks nil, and some print
-;; combinations complain about an ISeqable
-;; issue
-(defn draw []
-  (print app-state))
-
-;; (defn draw [] (domina/append!
-;;   (domina/by-id "dots")
-;;   (str (map
-;;     (fn [n] (str "<div id='" n "' class='dot'></div>"))
-;;     (map (fn [dot] (get :id dot)) app-state)))))
-
-;; (defn draw [] (map js/console.log app-state))
-;; (defn draw [] (map
-;;   (fn [dot] (js/console.log dot) app-state)))
+(defn draw [dots]
+  (js/console.log (count dots))
+  (domina/destroy! (domina/by-class "dot"))
+  (doall
+    (map
+      (fn [dot] (domina/append!
+        (domina/by-id "dots")
+        (str "<div id=" (:id dot) " "
+             "style='left:" (:x dot) "px;"
+             "top:" (:y dot) "px"
+             "' class='dot'></div>")))
+      dots)))
 
 (events/listen!
   (domina/by-id "dots") :click
   (fn [evt]
-    (swap! app-state {
-      :dots [{
-        :x (:offsetX evt)
-        :y (:offsetY evt)
-        :id (.getTime (js/Date.))
-      }]
-    })))
-
-(events/listen!
-  (domina/by-id "dots") :click draw)
+    (swap!
+      app-state
+      update-in [:dots]
+        (fn [old-dots]
+          (conj old-dots {
+            :x  (:offsetX evt)
+            :y  (:offsetY evt)
+            :id (.getTime (js/Date.))
+          })))
+    (draw (:dots @app-state))))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  )

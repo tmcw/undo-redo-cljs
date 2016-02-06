@@ -1,2 +1,18 @@
 /* some style */
+body {
+  font-family: sans-serif;
+}
 
+#dots {
+  position: relative;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  margin-left: -5px;
+  margin-right: -5px;
+  background: #000;
+  position:absolute;
+}
