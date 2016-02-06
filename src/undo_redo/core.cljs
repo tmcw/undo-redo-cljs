@@ -22,7 +22,7 @@
   :width "600px" :height "200px" :background "#EFEFEF" :cursor "crosshair"})
 
 (defn draw [dots]
-  (js/console.log (count dots))
+  ;; (js/console.log (count dots))
   (domina/destroy! (domina/by-class "dot"))
   (doall
     (map
@@ -37,16 +37,47 @@
 (events/listen!
   (domina/by-id "dots") :click
   (fn [evt]
+    (if (not= (count (:history @app-state)) (dec (:historyIndex @app-state)))
+      (swap!
+        app-state update-in [:history] (fn [old-history]
+          (subvec old-history 0 (inc (:historyIndex @app-state))))))
+    (swap!
+      app-state update-in [:historyIndex] inc)
     (swap!
       app-state
-      update-in [:history (:historyIndex @app-state)]
-        (fn [old-dots]
-          (conj old-dots {
-            :x  (:offsetX evt)
-            :y  (:offsetY evt)
-            :id (.getTime (js/Date.))
-          })))
-    (draw (get-in @app-state [:history (:historyIndex @app-state)]))))
+      update-in [:history]
+        (fn [old-history]
+          (conj old-history 
+            (conj (peek old-history) {
+              :x  (:offsetX evt)
+              :y  (:offsetY evt)
+              :id (.getTime (js/Date.))
+            }))))
+    (draw
+      (get-in @app-state [:history (:historyIndex @app-state)]))))
+
+(events/listen!
+  (domina/by-id "redo") :click
+    (fn [evt]
+      (js/console.log (:historyIndex @app-state))
+      (swap!
+        app-state
+          update-in [:historyIndex]
+            (fn [old-index]
+              (min (inc old-index) (dec (count (:history @app-state))))))
+    (draw
+      (get-in @app-state [:history (:historyIndex @app-state)]))))
+
+(events/listen!
+  (domina/by-id "undo") :click
+    (fn [evt]
+      (js/console.log (:historyIndex @app-state))
+      (swap!
+        app-state
+          update-in [:historyIndex]
+            (fn [old-index] (max (dec old-index) 0)))
+    (draw
+      (get-in @app-state [:history (:historyIndex @app-state)]))))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
