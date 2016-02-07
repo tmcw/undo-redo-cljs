@@ -78,4 +78,4 @@ return ((x__17136__auto__ > y__17137__auto__) ? x__17136__auto__ : y__17137__aut
 return undo_redo.core.draw.call(null,undo_redo.core.current_dots.call(null));
 }));
 
-//# sourceMappingURL=core.js.map?rel=1454802858114
+//# sourceMappingURL=core.js.map?rel=1454864331693
