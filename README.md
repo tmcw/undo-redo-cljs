@@ -1,10 +1,12 @@
 # undo-redo
 
-FIXME: Write a one-line description of your library/project.
+A port of [simple undo with immutable.js](http://www.macwright.org/2015/05/18/practical-undo.html) to ClojureScript.
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+This is a demonstration of building a simple undo/redo in ClojureScript. This
+is also possible with JavaScript, but it's nice to have ClojureScript's
+built-in immutability.
 
 ## Setup
 
@@ -34,6 +36,6 @@ get live reloading, nor a REPL.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2016 Tom MacWright
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
